@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hi Hanaa 💙</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Playfair+Display&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Dancing Script', cursive;
+      background: linear-gradient(270deg, #cce0ff, #e6f0ff, #d0e6ff);
+      background-size: 600% 600%;
+      animation: gradientShift 20s ease infinite;
+      overflow: hidden;
+      position: relative;
+      cursor: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') 16 16, auto;
+    }
+
+    @keyframes gradientShift {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .container {
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .screen {
+      font-size: 2em;
+      color: #003366;
+      margin-top: 30vh;
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 1em;
+      border: none;
+      border-radius: 25px;
+      background-color: #6699ff;
+      color: white;
+      cursor: pointer;
+      font-family: 'Playfair Display', serif;
+      transition: transform 0.2s;
+      position: relative;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #musicToggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 3;
+      background: #6699ff;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-family: 'Playfair Display', serif;
+      cursor: pointer;
+    }
+
+    .final-buttons {
+      margin-top: 30px;
+    }
+
+    #fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .crying {
+      font-size: 2em;
+      color: #003366;
+      animation: shake 0.5s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="hearts"></canvas>
+  <canvas id="fireworks"></canvas>
+  <button id="musicToggle">🔊 Music</button>
+  <div class="container">
+    <div id="screen" class="screen"></div>
+    <button id="nextBtn">Next</button>
+    <audio id="bgMusic" autoplay loop>
+      <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e4b6e6f3e.mp3?filename=romantic-background-110253.mp3" type="audio/mp3">
+    </audio>
+  </div>
+
+  <script>
+    const messages = [
+     "My favourite Miss Hanaa😙",
+  "I keep finding new ways to make you smile.",
+  "Like when you loved the F1 car and that rose bouquet blanket…",
+  "Your words that day… they warmed me more than you'll ever know.",
+"Truth is, I don’t do these things to impress you.",
+"I do them because your smile feels like home. And when you’re happy… so am I.",
+  "That first call? I was low-key panicking inside. But two minutes in, something about you just made it feel natural.",
+  "I was smiling like a fool after that call.🌚",
+  "So I made this. A soft little space to say what's been in me for a while(2 years since June 1st 2023).",
+  "Hanaa, I like you. Like really, truly, from-the-heart like you.❤️",
+  "I haven’t even met you yet and it might sound crazy but even without meeting, my heart’s already convinced.",
+    "Maybe we could... 💙",
+      `<div class='final'>Do you like me too? 🥺<br>
+        <div class="final-buttons">
+          <button id="yesBtn">Yes 💙</button>
+          <button id="noBtn">No 😢</button>
+        </div>
+      </div>`
+    ];
+
+    let current = 0;
+    let isTyping = false;
+    const screenEl = document.getElementById("screen");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function typeMessage(text, callback) {
+      screenEl.innerHTML = "";
+      let i = 0;
+      isTyping = true;
+      const interval = setInterval(() => {
+        screenEl.innerHTML += text.charAt(i);
+        i++;
+        if (i === text.length) {
+          clearInterval(interval);
+          isTyping = false;
+          if (callback) callback();
+        }
+      }, 50);
+    }
+
+    function showScreen(index) {
+      if (index < messages.length - 1) {
+        typeMessage(messages[index]);
+      } else {
+        screenEl.innerHTML = messages[index];
+        nextBtn.style.display = "none";
+        setupFinalButtons();
+      }
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (isTyping) return;
+      current++;
+      showScreen(current);
+    });
+
+    showScreen(current);
+
+    // Heart particles
+    const canvas = document.getElementById("hearts");
+    const ctx = canvas.getContext("2d");
+    let hearts = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const fireworksCanvas = document.getElementById("fireworks");
+      fireworksCanvas.width = window.innerWidth;
+      fireworksCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    function createHeart() {
+      return {
+        x: Math.random() * canvas.width,
+        y: canvas.height + Math.random() * 100,
+        size: Math.random() * 20 + 10,
+        speed: Math.random() * 1 + 0.5,
+        opacity: Math.random() * 0.5 + 0.5
+      };
+    }
+
+    function drawHeart(h) {
+      ctx.globalAlpha = h.opacity;
+      ctx.fillStyle = "#ff6699";
+      ctx.beginPath();
+      ctx.moveTo(h.x, h.y);
+      ctx.arc(h.x - h.size / 2, h.y, h.size / 2, 0, Math.PI * 2);
+      ctx.arc(h.x + h.size / 2, h.y, h.size / 2, 0, Math.PI * 2);
+      ctx.lineTo(h.x, h.y + h.size);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function animateHearts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (hearts.length < 100) hearts.push(createHeart());
+      hearts.forEach((h, i) => {
+        h.y -= h.speed;
+        drawHeart(h);
+        if (h.y < -50) hearts.splice(i, 1);
+      });
+      requestAnimationFrame(animateHearts);
+    }
+
+    animateHearts();
+
+    // Music toggle
+    const musicBtn = document.getElementById("musicToggle");
+    const music = document.getElementById("bgMusic");
+    let playing = true;
+
+    musicBtn.addEventListener("click", () => {
+      playing = !playing;
+      if (playing) {
+        music.play();
+        musicBtn.textContent = "🔊 Music";
+      } else {
+        music.pause();
+        musicBtn.textContent = "🔇 Music";
+      }
+    });
+
+    // Final screen buttons
+    function setupFinalButtons() {
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+
+      yesBtn.addEventListener("click", () => {
+        screenEl.innerHTML = `<div class='final'>I love you too! 💙<br><img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk57t77UQIkiwTcJUfCwPVY_emTvMixwE2hQ&s' alt='Heart'></div>`;
+        launchFireworks();
+      });
+
+      let dodgeCount = 0;
+      noBtn.addEventListener("mouseover", () => {
+        if (dodgeCount < 5) {
+          noBtn.style.position = "absolute";
+          noBtn.style.top = Math.random() * window.innerHeight * 0.8 + "px";
+          noBtn.style.left = Math.random() * window.innerWidth * 0.8 + "px";
+          dodgeCount++;
+        } else {
+          screenEl.innerHTML = `<div class='crying'>Okay... I understand 😢</div>`;
+        }
+      });
+    }
+
+    function launchFireworks() {
+      const canvas = document.getElementById("fireworks");
+      const ctx = canvas.getContext("2d");
+      const particles = [];
+
+      function createParticle(x, y) {
+        const colors = ["#ff6666", "#66ff66", "#6666ff", "#ffff66", "#ff66ff"];
+        return {
+          x,
+          y,
+          radius: Math.random() * 3 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedX: (Math.random() - 0.5) * 6,
+          speedY: (Math.random() - 0.5) * 6,
+          alpha: 1
+        };
+      }
+
+      function explode(x, y) {
+        for (let i = 0; i < 50; i++) {
+          particles.push(createParticle(x, y));
+        }
+      }
+
+      function animateFireworks() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.alpha -= 0.01;
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+          } else {
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+        requestAnimationFrame(animateFireworks);
+      }
+
+      explode(window.innerWidth / 2, window.innerHeight / 2);
+      animateFireworks();
+    }
+  </script>
+</body>
+</html>
